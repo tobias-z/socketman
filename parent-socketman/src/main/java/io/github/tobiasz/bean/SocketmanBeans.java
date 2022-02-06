@@ -33,12 +33,23 @@ public class SocketmanBeans {
         return instance;
     }
 
-    public <T> Channel<T> getBean(Class<T> clazz) {
-        // TODO: getBeansByChannelName
-        if (!channelMap.containsKey(clazz)) {
-            throw ResponseException.create("An unexpected error happened during beaning: unable to find bean: {}", clazz);
+    /**
+     *
+     * @param channelType A channelType used by your application
+     * @return A list of channels with that name or null if it was not found
+     */
+    public List<Channel> getChannel(String channelType) {
+        if (!channelMap.containsKey(channelType)) {
+            return null;
         }
-        return (Channel<T>) channelMap.get(clazz);
+        return channelMap.get(channelType);
+    }
+
+    public List<Channel> getAllChannels() {
+        // TODO: create allChannelList on init
+        List<Channel> channelList = new ArrayList<>();
+        channelMap.forEach((s, channels) -> channelList.addAll(channels));
+        return channelList;
     }
 
     public void initBeans() {
@@ -47,12 +58,12 @@ public class SocketmanBeans {
         channelMap = new HashMap<>();
         for (Class<? extends Channel> clazz : reflections.getSubTypesOf(Channel.class)) {
             String channelType = getChannelType(clazz);
-            Channel aClass = getClass(clazz);
+
             if (!channelMap.containsKey(channelType)) {
                 channelMap.put(channelType, new ArrayList<>());
             }
             List<Channel> channels = channelMap.get(channelType);
-            channels.add(aClass);
+            channels.add(getClass(clazz));
         }
         printBeans();
     }
