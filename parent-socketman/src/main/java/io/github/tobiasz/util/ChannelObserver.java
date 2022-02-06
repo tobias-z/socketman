@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ChannelObservable<T extends Channel<K>, K> {
+public class ChannelObserver<T extends Channel<K>, K> {
 
     private final List<T> observableList = new ArrayList<>();
 

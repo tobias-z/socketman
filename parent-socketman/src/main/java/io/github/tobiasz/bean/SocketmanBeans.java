@@ -1,14 +1,18 @@
 package io.github.tobiasz.bean;
 
+import io.github.tobiasz.annotation.ChannelType;
+import io.github.tobiasz.enums.ChannelName;
 import io.github.tobiasz.exceptions.ResponseException;
 import io.github.tobiasz.server.Channel;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
@@ -17,7 +21,7 @@ import org.reflections.util.ConfigurationBuilder;
 public class SocketmanBeans {
 
     private static SocketmanBeans instance;
-    private Map<Class<? extends Channel>, ? extends Channel> beans;
+    private Map<String, List<Channel>> channelMap;
 
     private SocketmanBeans() {
     }
@@ -31,25 +35,37 @@ public class SocketmanBeans {
 
     public <T> Channel<T> getBean(Class<T> clazz) {
         // TODO: getBeansByChannelName
-        if (!beans.containsKey(clazz)) {
+        if (!channelMap.containsKey(clazz)) {
             throw ResponseException.create("An unexpected error happened during beaning: unable to find bean: {}", clazz);
         }
-        return (Channel<T>) beans.get(clazz);
+        return (Channel<T>) channelMap.get(clazz);
     }
 
     public void initBeans() {
         ConfigurationBuilder config = getConfigurationBuilder();
         Reflections reflections = new Reflections(config);
-        beans = reflections.getSubTypesOf(Channel.class)
-            .stream()
-            .collect(Collectors.toMap(
-                aClass -> aClass,
-                SocketmanBeans::getClass
-            ));
+        channelMap = new HashMap<>();
+        for (Class<? extends Channel> clazz : reflections.getSubTypesOf(Channel.class)) {
+            String channelType = getChannelType(clazz);
+            Channel aClass = getClass(clazz);
+            if (!channelMap.containsKey(channelType)) {
+                channelMap.put(channelType, new ArrayList<>());
+            }
+            List<Channel> channels = channelMap.get(channelType);
+            channels.add(aClass);
+        }
         printBeans();
     }
 
-    private static <T> T getClass(Class<T> aClass) {
+    private String getChannelType(Class<? extends Channel> clazz) {
+        ChannelType channel = clazz.getAnnotation(ChannelType.class);
+        if (channel == null || channel.channelType().equals("")) {
+            return ChannelName.ALL_CHANNEL_TYPES.toString();
+        }
+        return channel.channelType();
+    }
+
+    private <T> T getClass(Class<T> aClass) {
         try {
             return aClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -77,8 +93,10 @@ public class SocketmanBeans {
     private void printBeans() {
         StringBuilder builder = new StringBuilder();
         builder.append("Beaned channels: \n");
-        beans.forEach((aClass, channel) -> {
-            builder.append(aClass).append(", ");
+        channelMap.forEach((type, classes) -> {
+            builder.append(type).append(": ");
+            classes.forEach(aClass -> builder.append(aClass.getClass().getName()).append(", "));
+            builder.append("\n");
         });
         System.out.println(builder);
     }
