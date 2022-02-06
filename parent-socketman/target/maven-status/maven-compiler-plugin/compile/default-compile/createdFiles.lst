@@ -1,7 +1,0 @@
-io/github/tobiasz/server/channels/MessageChannel.class
-io/github/tobiasz/beans/SocketmanBeans.class
-io/github/tobiasz/server/SocketmanServer.class
-io/github/tobiasz/server/Channel.class
-io/github/tobiasz/util/ChannelObservable.class
-io/github/tobiasz/SocketmanApplication.class
-io/github/tobiasz/server/MessageReceiver.class

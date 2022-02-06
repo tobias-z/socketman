@@ -8,6 +8,8 @@
 /docs/out/
 /docs/build
 
+**/target
+
 .env.local
 .env.development.local
 .env.test.local
