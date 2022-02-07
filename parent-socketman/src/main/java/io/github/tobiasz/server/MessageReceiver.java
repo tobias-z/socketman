@@ -2,7 +2,7 @@ package io.github.tobiasz.server;
 
 import static io.github.tobiasz.util.Console.print;
 
-import io.github.tobiasz.bean.SocketmanBeans;
+import io.github.tobiasz.context.SocketmanContext;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.websocket.OnClose;
@@ -16,7 +16,7 @@ import java.io.IOException;
 @ServerEndpoint(value = "/")
 public class MessageReceiver {
 
-    private final SocketmanBeans beans = SocketmanBeans.getInstance();
+    private final SocketmanContext beans = SocketmanContext.getContext();
 
     @OnOpen
     public void onOpen(Session session) {

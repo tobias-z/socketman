@@ -1,6 +1,6 @@
 package io.github.tobiasz;
 
-import io.github.tobiasz.bean.SocketmanBeans;
+import io.github.tobiasz.context.SocketmanContext;
 import io.github.tobiasz.server.SocketmanServer;
 
 public class SocketmanApplication {
@@ -18,7 +18,8 @@ public class SocketmanApplication {
     }
 
     public static void run(int port, String path) {
-        SocketmanBeans.getInstance().initBeans();
+        // Create context
+        SocketmanContext.getContext();
         SocketmanServer.run(port, path);
     }
 
