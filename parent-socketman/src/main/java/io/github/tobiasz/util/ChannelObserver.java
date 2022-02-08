@@ -9,12 +9,14 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class ChannelObserver<T extends Channel<K>, K> {
+public class ChannelObserver<T extends Channel, K> {
 
     private final List<T> observableList = new ArrayList<>();
 
     public void subscribe(T observable) {
-        observableList.add(observable);
+        if (!this.observableList.contains(observable)) {
+            observableList.add(observable);
+        }
     }
 
     public void unsubscribe(T observable) {

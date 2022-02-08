@@ -1,6 +1,7 @@
 package io.github.tobiasz.util;
 
 import io.github.tobiasz.exceptions.ResponseException;
+import io.github.tobiasz.server.Channel;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;

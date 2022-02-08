@@ -39,6 +39,7 @@ public class SocketmanContext {
      * @return A list of channels with that name or null if it was not found
      */
     public List<Channel> getChannel(String channelName) {
+        // TODO: Provide ability to use generic
         if (!channelMap.containsKey(channelName)) {
             return null;
         }
@@ -50,7 +51,7 @@ public class SocketmanContext {
      * @param channelNames any amount of channelNames that you want to have
      * @return A list of channels of all the found channels
      */
-    public List<Channel> getChannel(String... channelNames) {
+    public List<Channel> getChannels(String... channelNames) {
         List<Channel> channels = new ArrayList<>();
         for (String channelName : channelNames) {
             List<Channel> foundChannel = this.getChannel(channelName);

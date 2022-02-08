@@ -1,64 +1,55 @@
 package io.github.tobiasz.server;
 
-import static io.github.tobiasz.util.Console.print;
+import static io.github.tobiasz.enums.ChannelType.ALL_CHANNEL_TYPES;
+import static io.github.tobiasz.mapping.MessageMapper.getMessage;
 
 import io.github.tobiasz.context.SocketmanContext;
+import io.github.tobiasz.dto.MessageDto;
+import io.github.tobiasz.util.ChannelObserver;
 import jakarta.websocket.CloseReason;
-import jakarta.websocket.CloseReason.CloseCodes;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
-import java.io.IOException;
+import java.util.List;
+import java.util.function.Consumer;
 
 @ServerEndpoint(value = "/")
 public class MessageReceiver {
 
-    private final SocketmanContext beans = SocketmanContext.getContext();
+    private final SocketmanContext context = SocketmanContext.getContext();
+    private final ChannelObserver<Channel, ?> channelObserver = new ChannelObserver<>();
 
     @OnOpen
     public void onOpen(Session session) {
-        System.out.println("Connected, sessionID = " + session.getId());
+        this.context.getChannel(ALL_CHANNEL_TYPES.toString()).forEach(channelObserver::subscribe);
+        this.doAction(channel -> channel.onOpen(session));
     }
 
     @OnMessage
     public String onMessage(String message, Session session) {
-        checkForQuit(message, session);
-        try {
-            session.getBasicRemote().sendText("hello world");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        System.out.println(message);
+        MessageDto<?> mappedMessage = getMessage(message);
+        List<Channel> channels = this.context.getChannel(mappedMessage.getChannelName());
+        channels.forEach(this.channelObserver::subscribe);
+        System.out.println(mappedMessage);
+        channels.forEach(channel -> channel.onMessage(mappedMessage.getMessage(), session));
         return null;
     }
 
     @OnClose
     public void onClose(Session session, CloseReason closeReason) {
-        System.out.println("Session " + session.getId() +
-            " closed because " + closeReason);
+        this.doAction(channel -> channel.onClose(session, closeReason));
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        print("error at client '{}'", session.getId(), throwable);
-        try {
-            session.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.doAction(channel -> channel.onError(session, throwable));
     }
 
-    private void checkForQuit(String message, Session session) {
-        if (message.equals("quit")) {
-            try {
-                session.close(new CloseReason(CloseCodes.NORMAL_CLOSURE, "Bye!"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    private void doAction(Consumer<Channel> consumer) {
+        this.channelObserver.getObservableList().forEach(consumer);
     }
 
 }
