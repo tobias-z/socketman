@@ -1,5 +1,6 @@
 package io.github.tobiasz.integration.util.testbeans;
 
+import io.github.tobiasz.Client;
 import io.github.tobiasz.annotation.ChannelConfig;
 import io.github.tobiasz.server.Channel;
 import jakarta.websocket.Session;
@@ -8,7 +9,7 @@ import jakarta.websocket.Session;
 public class TeamChannel extends Channel<String> {
 
     @Override
-    public void onMessage(String message, Session session) {
+    public void onMessage(String message, Client<Session> session) {
         //TODO (tz): implement this!
         throw new UnsupportedOperationException("Not yet implemented!");
     }

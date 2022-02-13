@@ -2,23 +2,37 @@ package io.github.tobiasz.server;
 
 import static io.github.tobiasz.util.Console.print;
 
+import io.github.tobiasz.Client;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.Session;
 import java.io.IOException;
 
 abstract public class Channel<T> {
 
-    abstract public void onMessage(T message, Session session);
+    /**
+     * Called when a message is sent to the specified channel with @ChannelConfig
+     * If no ChannelConfig is given, it is considered a global channel which is called every time a message is sent
+     */
+    abstract public void onMessage(T message, Client<Session> client);
 
-    public void onOpen(Session session) {
-        print("Connected, sessionID = {}", session.getId());
+    /**
+     *  When a client first sends a message to a channel the onOpen is called before onMessage
+     */
+    public void onOpen(Client<Session> client) {
+        print("Connected, sessionID = {}", client.getId());
     }
 
-    public void onClose(Session session, CloseReason closeReason) {
-        print("Session {} closed because {}", session.getId(), closeReason);
+    /**
+     *  Whenever a client leaves this method is called
+     */
+    public void onClose(Client<Session> client, CloseReason closeReason) {
+        print("Session {} closed because {}", client.getId(), closeReason);
     }
 
-    public void onError(Session session, Throwable throwable) {
-        print("error at client '{}'", session.getId(), throwable);
+    /**
+     *  onError is called whenever an unknown error happens
+     */
+    public void onError(Client<Session> client, Throwable throwable) {
+        print("error at client '{}'", client.getId(), throwable);
     }
 }

@@ -5,6 +5,7 @@ import static io.github.tobiasz.util.Console.print;
 import static io.github.tobiasz.util.ExceptionUtil.exceptionCatcher;
 import static java.util.Objects.nonNull;
 
+import io.github.tobiasz.Client;
 import io.github.tobiasz.context.SocketmanContext;
 import io.github.tobiasz.exceptions.ClientResponseException;
 import io.github.tobiasz.functions.VoidFunc;
@@ -18,25 +19,25 @@ public class ClientBoundary {
 
     private final SocketmanContext context;
 
-    public void handleException(Session session, VoidFunc fn) {
+    public void handleException(Client<Session> client, VoidFunc fn) {
         exceptionCatcher(fn,
-            e -> handleClientResponseException(session, e),
-            e -> handleUnknownException(session, e)
+            e -> handleClientResponseException(client, e),
+            e -> handleUnknownException(client, e)
         );
     }
 
-    private void handleClientResponseException(Session session, ClientResponseException e) {
+    private void handleClientResponseException(Client<Session> client, ClientResponseException e) {
         try {
-            session.getBasicRemote().sendText(e.getMessage());
+            client.sendSelf(e.getMessage());
         } catch (IOException ex) {
             print("Unable to send message", ex);
         }
     }
 
-    private void handleUnknownException(Session session, RuntimeException e) {
+    private void handleUnknownException(Client<Session> client, RuntimeException e) {
         List<Channel> allChannels = context.getChannel(ALL_CHANNEL_TYPES.toString());
         if (nonNull(allChannels)) {
-            allChannels.forEach(channel -> channel.onError(session, e));
+            allChannels.forEach(channel -> channel.onError(client, e));
         }
     }
 
