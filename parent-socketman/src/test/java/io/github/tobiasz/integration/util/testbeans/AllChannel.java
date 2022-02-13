@@ -7,7 +7,11 @@ public class AllChannel extends Channel<Object> {
 
     @Override
     public void onMessage(Object message, Session session) {
-        //TODO (tz): implement this!
-        throw new UnsupportedOperationException("Not yet implemented!");
+        System.out.println("hit all channel channel");
+    }
+
+    @Override
+    public void onError(Session session, Throwable throwable) {
+        System.out.println("error happened: " + throwable.getMessage());
     }
 }

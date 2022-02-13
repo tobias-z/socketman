@@ -23,7 +23,7 @@ public class Console {
             if (queue.isEmpty()) {
                 break;
             }
-            message = message.replace("{}", String.valueOf(queue.remove()));
+            message = message.replaceFirst("\\{}", String.valueOf(queue.remove()));
         }
         return message;
     }

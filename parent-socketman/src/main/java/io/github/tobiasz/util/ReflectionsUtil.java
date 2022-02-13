@@ -1,7 +1,6 @@
 package io.github.tobiasz.util;
 
-import io.github.tobiasz.exceptions.ResponseException;
-import io.github.tobiasz.server.Channel;
+import io.github.tobiasz.exceptions.ClientResponseException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Arrays;
@@ -33,7 +32,7 @@ public class ReflectionsUtil {
         try {
             return aClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw ResponseException.create("Unable to create instance of class: {}", aClass, e);
+            throw ClientResponseException.create("Unable to create instance of class: {}", aClass, e);
         }
     }
 

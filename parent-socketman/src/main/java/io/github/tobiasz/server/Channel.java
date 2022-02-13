@@ -4,6 +4,7 @@ import static io.github.tobiasz.util.Console.print;
 
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.Session;
+import java.io.IOException;
 
 abstract public class Channel<T> {
 
