@@ -6,6 +6,7 @@ import io.github.tobiasz.Client;
 import io.github.tobiasz.util.ChannelObserver;
 import jakarta.websocket.Session;
 import java.io.IOException;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -30,13 +31,13 @@ class ClientImpl implements Client<Session> {
     }
 
     @Override
-    public void sendChannel(String message, String... channelNames) throws IOException {
-        this.channelObserver.sendMessage(message, this.getId(), channelNames);
+    public void sendChannel(String message, String channelName, String... extraChannelNames) throws IOException {
+        this.channelObserver.sendMessage(message, this.getId(), this.getChannels(channelName, extraChannelNames));
     }
 
     @Override
-    public void sendChannel(Object obj, String... channelNames) throws IOException {
-        this.channelObserver.sendMessage(gson.toJson(obj), this.getId(), channelNames);
+    public void sendChannel(Object obj, String channelName, String... extraChannelNames) throws IOException {
+        this.channelObserver.sendMessage(gson.toJson(obj), this.getId(), this.getChannels(channelName, extraChannelNames));
     }
 
     @Override
@@ -47,6 +48,12 @@ class ClientImpl implements Client<Session> {
     @Override
     public Session getSession() {
         return this.session;
+    }
+
+    private String[] getChannels(String channelName, String[] channelNames) {
+        String[] channels = Arrays.copyOf(channelNames, channelNames.length + 1);
+        channels[channels.length - 1] = channelName;
+        return channels;
     }
 
 }

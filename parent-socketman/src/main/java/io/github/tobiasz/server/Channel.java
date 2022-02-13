@@ -10,7 +10,7 @@ import java.io.IOException;
 abstract public class Channel<T> {
 
     /**
-     * Called when a message is sent to the specified channel with @ChannelConfig
+     * Called when a message is sent to the specified channel
      * If no ChannelConfig is given, it is considered a global channel which is called every time a message is sent
      */
     abstract public void onMessage(T message, Client<Session> client);
