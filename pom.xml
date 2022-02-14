@@ -11,14 +11,15 @@
 
   <modules>
     <module>socketman-commons</module>
-    <module>parent-socketman</module>
-    <module>spring-socketman</module>
+    <module>socketman-tyrus</module>
+    <module>socketman-tyrus-test</module>
+    <module>socketman-spring</module>
   </modules>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <junit.version>5.8.2</junit.version>
   </properties>
 
@@ -33,19 +34,6 @@
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
       <version>2.8.9</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <version>3.22.0</version>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
