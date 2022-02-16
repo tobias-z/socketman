@@ -19,10 +19,12 @@ public class SocketmanContext {
     private static SocketmanContext context;
     private final Map<String, List<Channel>> channelMap;
     private final List<Channel> allChannels;
+    private final SocketmanBeans beans;
 
     private SocketmanContext() {
         this.channelMap = new HashMap<>();
         this.allChannels = new ArrayList<>();
+        this.beans = new SocketmanBeans();
         this.initBeans();
     }
 
@@ -72,6 +74,11 @@ public class SocketmanContext {
 
     private void initBeans() {
         Reflections reflections = new Reflections(getConfigurationBuilder());
+        this.beans.initBeans(reflections);
+        initChannels(reflections);
+    }
+
+    private void initChannels(Reflections reflections) {
         for (Class<? extends Channel> clazz : reflections.getSubTypesOf(Channel.class)) {
             String channelName = getChannelName(clazz);
 
@@ -85,7 +92,6 @@ public class SocketmanContext {
         }
         printBeans();
     }
-
 
     private void printBeans() {
         StringBuilder builder = new StringBuilder();
